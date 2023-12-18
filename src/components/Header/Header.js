@@ -1,12 +1,12 @@
 import CartButton from "./CartButton";
 import classes from "./Header.module.css";
 import meals from "../../Image/meals.jpg";
-const Header = (props) => {
+const Header = () => {
     return(
         <>
             <header className={classes.header}>
                 <h2>ReactMeals</h2>
-                <CartButton itemCount = {props.itemCount}/>
+                <CartButton />
             </header>
             <div className={classes['main-image']}>
                 <img src={meals}></img>

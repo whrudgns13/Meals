@@ -1,7 +1,10 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import Input from "../../UI/Input";
 import classes from "./MealItemForm.module.css";
-const MealItemForm = (props) =>{
+import ItemContext from "../../store/item-context";
+
+const MealItemForm = ({meal}) =>{
+    const context = useContext(ItemContext);
     const [amount, setAmount] = useState(1);
     const amountChange = (e) =>{
         setAmount(e.target.value);
@@ -9,7 +12,7 @@ const MealItemForm = (props) =>{
     
     const onSubmit = (e) =>{
         e.preventDefault();
-        props.submit(amount);
+        context.onSubmit(amount,meal);
     };
 
     return (

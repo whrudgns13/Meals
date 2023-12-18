@@ -1,11 +1,11 @@
 import AvailableMeals from "./AvailableMeals";
 import MealsSummary from "./MealsSummary";
 
-const Meals = (props) => {
+const Meals = () => {
     return (
         <>
             <MealsSummary/> 
-            <AvailableMeals submit={props.submit}/>   
+            <AvailableMeals/>   
         </>
     )
 }
