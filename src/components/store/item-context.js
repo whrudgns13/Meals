@@ -1,62 +1,84 @@
-import React,{useState} from "react";
+import React,{useReducer, useState} from "react";
 
 const ItemContext = React.createContext({
     itemCount : 0,
     mealItems : [],
-    isModalOpen : false,
-    modalHandler : (isOpen) =>{},
-    onSubmit : ()=>{}
+    onSubmit : (meal)=>{},
+    removeCart : (meal)=>{}
 });
 
+const defaultCartState = {
+    mealItems : [],
+    totalAmount : 0    
+};
+
 export const ItemContextProvider = (props) =>{
-    const [itemCount, setItemCount] = useState(0);
-    const [mealItems, setMealItems] = useState([]);
-    const [isModalOpen, setIsModalOpen] = useState(false);
+  
+    const [cartState, cartAction] = useReducer((state, action)=>{
+        const updateItems = state.mealItems;
+        const meal = action.meal;
+        const index = updateItems.findIndex(mealItem => mealItem.id===meal.id);
 
-    const modalHandler = (isOpen) =>{
-        setIsModalOpen(()=>isOpen);
-    }
+        if(action.type==="ADD"){
+            const total = state.totalAmount+(meal.price*meal.amount);
 
-    const addCart = (count, meal) =>{
-        count = Number(count);
-        setItemCount((currentCount)=>{
-          return currentCount+count;
-        });
-
-        const index = mealItems.findIndex((mealItem)=>mealItem.id===meal.id);
-        
-        if(index>-1){
-            setMealItems((mealItems)=>{
-                mealItems[index].amount = mealItems[index].amount + count;
-                return [...mealItems];
-            });
-            return;
+            if(index>-1){
+                updateItems[index].amount = updateItems[index].amount + meal.amount; 
+                
+                return {
+                    mealItems : [...updateItems],
+                    totalAmount : total
+                };
+            }
+            
+            return {
+                mealItems : [...updateItems, action.meal],
+                totalAmount : total
+            };
         }
 
-        setMealItems((mealItems)=>{
-            meal.amount = count;
-            return [...mealItems,meal];
+        if(action.type==="REMOVE"){
+            if(index>-1){
+                updateItems[index].amount = updateItems[index].amount-1;
+                
+                if(!updateItems[index].amount){
+                    updateItems.splice(index,1);
+                }
+                
+                const total = state.totalAmount-meal.price;
+
+                return {
+                    mealItems : [...updateItems],
+                    totalAmount : total
+                }
+            }
+        }
+
+        return defaultCartState;
+    },defaultCartState);
+
+    const addCart = (meal) =>{
+        cartAction({
+            type : "ADD",
+            meal
         });
 
-        // mealCount[meal.id] ? setMealCount((obj)=>{
-        //     obj[meal.id].count = obj[meal.id].count+count;
-        //     return {...obj};
-        // }) : setMealCount((obj)=>{
-        //     meal.count = count;
-        //     obj[meal.id] = meal;
-        //     return {...obj};
-        // });
     };
+
+    const removeCart = (meal) =>{
+        cartAction({type : "REMOVE", meal});
+    };
+
+    const cartContext = {
+        totalAmount : cartState.totalAmount,
+        mealItems : cartState.mealItems,
+        onSubmit : addCart,
+        removeCart
+    }
 
     return (
         <ItemContext.Provider 
-            value= {{
-                itemCount,
-                mealItems,
-                isModalOpen,
-                modalHandler,
-                onSubmit : addCart,
-            }}
+            value= {cartContext}
         >
             {props.children}
         </ItemContext.Provider>

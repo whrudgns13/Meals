@@ -1,28 +1,28 @@
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import ItemContext from "../store/item-context";
 import classes from "./Cart.module.css";
 import Modal from "../UI/Modal";
-const Cart = () =>{
+import CartItem from "./CartItem";
+
+const Cart = (props) =>{
     const context= useContext(ItemContext);
     const cartItem = (
         <ul className={classes['cart-items']}>
-        {context.mealItems.map(mealItem=><li>{mealItem.name}</li>)}
+        {context.mealItems.map(mealItem=><CartItem meal={mealItem}></CartItem>)}
         </ul>
     );
 
-    const onModelClose = () =>{
-        context.modalHandler(false);
-    }
-
+    const onClose = ()=> props.modalHandler(false);
+    
     return (
-        <Modal>
-            {cartItem}
+        <Modal onClose={onClose}>
+           {cartItem}
             <div className={classes.total}>
                 <span>Total Amount</span>
-                <span></span>
+                <span>{context.totalAmount.toFixed(2)}</span>                
             </div>
             <div className={classes.actions}>
-                <button className={classes['button--alt']} onClick={onModelClose}>close</button>
+                <button className={classes['button--alt']} onClick={onClose}>close</button>
                 <button className={classes.button}>Order</button>
             </div>
         </Modal>

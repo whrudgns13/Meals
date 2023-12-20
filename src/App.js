@@ -5,18 +5,17 @@ import Meals from "./components/Meals/Meals";
 import ItemContext, { ItemContextProvider } from "./components/store/item-context";
 
 function App() {
-  // const [itemCount, setItemCount] = useState(0);
-  // const addCart = (count) =>{
-  //   setItemCount((currentCount)=>{
-  //     return currentCount+Number(count);
-  //   });
-  // }
-  const context = useContext(ItemContext);
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  
+  const modalHandler = (isOpen) =>{
+    setIsModalOpen(()=>isOpen);
+  };
 
   return (
     <>
-      {context.isModalOpen && <Cart/>}
-      <Header/>
+      {isModalOpen && <Cart modalHandler={modalHandler}/>}
+      <Header modalHandler={modalHandler}/>
       <main>
         <Meals/>
       </main>
